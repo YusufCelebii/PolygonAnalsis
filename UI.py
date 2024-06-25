@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import filedialog
-from tkinter import messagebox
+from tkinter import filedialog, messagebox
 import cv2 as cv
+import rdp
 import algorithms
-
-# Initialize the global image variable
+import approxPolyDP
 image = None
+import matplotlib.pyplot as plt
 
 def browse_file():
     global image
@@ -13,60 +13,77 @@ def browse_file():
     if file_path:
         file_entry.delete(0, tk.END)
         file_entry.insert(0, file_path)
-        # Load the image
         image = cv.imread(file_path)
 
 def harris_button():
     global image
     if image is not None:
-        # Call Harris method
-        harris_corners, contours_harris = algorithms.find_corner_with_harris(image)
-        # Use Harris corners for detection and drawing
-        algorithms.detect_and_draw_diagonals(image.copy(), harris_corners, contours_harris)
+        corners, contours = algorithms.find_corner_with_harris(image)
+        img_with_diagonals = algorithms.detect_and_draw_diagonals(image.copy(), corners, contours)
+        algorithms.show_images(["Original Image", "Final Image"], [image, img_with_diagonals])
     else:
-        messagebox.showwarning("Uyarı", "Lütfen önce bir dosya seçin.")
+        messagebox.showwarning("Alert!", "Please choose an image!")
 
 def shi_tomasi_button():
     global image
     if image is not None:
-        # Call Shi-Tomasi method
-        shi_tomasi_corners, contours_shi_tomasi = algorithms.find_corner_with_shi_tomasi(image)
-        # Use Shi-Tomasi corners for detection and drawing
-        algorithms.detect_and_draw_diagonals(image.copy(), shi_tomasi_corners, contours_shi_tomasi)
+        corners, contours = algorithms.find_corner_with_shi_tomasi(image)
+        img_with_diagonals = algorithms.detect_and_draw_diagonals(image.copy(), corners, contours)
+        algorithms.show_images(["Original Image", "Final Image"], [image, img_with_diagonals])
     else:
-        messagebox.showwarning("Uyarı", "Lütfen önce bir dosya seçin.")
+        messagebox.showwarning("Alert", "Please choose an image!")
 
-def test_button():
-    messagebox.showinfo("Test Buton", "Test butonuna tıklandı")
+def rdp_button():
+    global image
+    if image is not None:
+        rdp.detect_and_classify_polygons(image)
+        plt.show()
+    else:
+        messagebox.showwarning("Alert!", "Please choose an image!")
+
+def approxPolyDP_button():
+    global image
+    if image is not None:
+        approxPolyDP.detect_and_classify_polygons(image)
+    else:
+        messagebox.showwarning("Alert!", "Please choose an image!")
+
+
 
 # Create Main Window
 root = tk.Tk()
-root.title("Örnek GUI")
-root.geometry("400x200")
+root.title("GUI")
+root.geometry("400x300")
 
 # Entry Widget and Choose file button
 file_frame = tk.Frame(root)
 file_frame.pack(pady=10)
 
-file_label = tk.Label(file_frame, text="Dosya Seç:")
+file_label = tk.Label(file_frame, text="Choose")
 file_label.pack(side=tk.LEFT, padx=5)
 
 file_entry = tk.Entry(file_frame, width=40)
 file_entry.pack(side=tk.LEFT, padx=5)
 
-browse_button = tk.Button(file_frame, text="Gözat", command=browse_file)
+browse_button = tk.Button(file_frame, text="Search", command=browse_file)
 browse_button.pack(side=tk.LEFT, padx=5)
 
 # Harris button
-harris_button = tk.Button(root, text="Harris", command=harris_button, width=8, height=1)
-harris_button.pack(pady=10)
+harris_btn = tk.Button(root, text="Harris", command=harris_button, width=15, height=2)
+harris_btn.pack(pady=10)
 
 # Shi-Tomasi button
-shi_tomasi_button = tk.Button(root, text="Shi-Tomasi", command=shi_tomasi_button, width=8, height=1)
-shi_tomasi_button.pack(pady=10)
+shi_tomasi_btn = tk.Button(root, text="Shi-Tomasi", command=shi_tomasi_button, width=15, height=2)
+shi_tomasi_btn.pack(pady=10)
 
-# Test button
-test_button = tk.Button(root, text="Test", command=test_button, width=8, height=1)
-test_button.pack(pady=10)
+# Ramer-Douglas-Peucker button
+rdp_btn = tk.Button(root, text="RDP", command=rdp_button, width=15, height=2)
+rdp_btn.pack(pady=10)
+
+#approxPolyDP button
+
+approxPolyDP_btn= tk.Button(root, text="approxPolyDP", command=approxPolyDP_button, width=15, height=2)
+approxPolyDP_btn.pack(pady=10)
+
 
 root.mainloop()
