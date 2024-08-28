@@ -4,8 +4,10 @@ import cv2 as cv
 import rdp
 import algorithms
 import approxPolyDP
-image = None
 import matplotlib.pyplot as plt
+
+global image
+image = None
 
 def browse_file():
     global image

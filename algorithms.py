@@ -34,7 +34,7 @@ def find_corner_with_harris(img):
 def find_corner_with_shi_tomasi(img):
     contours = find_contours(img)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    corners = cv.goodFeaturesToTrack(gray, maxCorners=100, qualityLevel=0.04, minDistance=100)
+    corners = cv.goodFeaturesToTrack(gray, maxCorners=45, qualityLevel=0.01, minDistance=60)
     corners = np.intp(corners)
     corners_list = [(corner[0][0], corner[0][1]) for corner in corners]
     return corners_list, contours
